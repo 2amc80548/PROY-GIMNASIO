@@ -1,30 +1,28 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { OrderCreatedEvent, NotificationsStatusResponse } from '@app/contracts';
+import { Inject, Injectable, Logger } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
+import { NATS_SERVICE } from '@app/contracts';
 
 @Injectable()
-export class NotificationsService {
-  private readonly logger = new Logger(NotificationsService.name);
+export class BillingService {
+  private readonly logger = new Logger(BillingService.name);
 
-  private readonly sentByCustomer = new Map<string, { count: number; last: string }>();
+  // Inyectamos NATS
+  constructor(@Inject(NATS_SERVICE) private readonly nats: ClientProxy) {}
 
-  handleOrderCreated(event: OrderCreatedEvent): void {
-    this.logger.log(
-      `Enviando notificacion a ${event.customer} por orden ${event.orderId} ($${event.total})`,
-    );
+  async procesarPago(socio: any) {
+    this.logger.log(`Cobrando mensualidad al socio: ${socio.nombre} (ID: ${socio.id}) - Plan: ${socio.plan}`);
 
-    const prev = this.sentByCustomer.get(event.customer);
-    this.sentByCustomer.set(event.customer, {
-      count: (prev?.count ?? 0) + 1,
-      last: new Date().toISOString(),
-    });
-  }
+    // Simulador de pasarela  de pago 
+    const pagoExitoso = Math.random() > 0.5;
 
-  getStatus(customer: string): NotificationsStatusResponse {
-    const entry = this.sentByCustomer.get(customer);
-    return {
-      customer,
-      sent: entry?.count ?? 0,
-      lastSentAt: entry?.last ?? null,
-    };
+    if (pagoExitoso) {
+      this.logger.log(`✅ Pago EXITOSO para ${socio.nombre}`);
+      // Avisamos al resto del sistema que el pago pasó
+      this.nats.emit('payment.charged', socio);
+    } else {
+      this.logger.warn(`❌ Pago RECHAZADO para ${socio.nombre} (Fondos insuficientes)`);
+      // Avisamos al resto del sistema que el pago falló
+      this.nats.emit('payment.failed', socio);
+    }
   }
 }

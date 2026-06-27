@@ -1,26 +1,32 @@
-import { Body, Controller, Get, NotFoundException, Param, Post } from '@nestjs/common';
-import { CreateOrderDto, OrdersService } from './members.service';
+import { Body, Controller, Get, Post, Param, Patch, Delete } from '@nestjs/common';
+import { MembersService } from './members.service';
 
-@Controller('orders')
-export class OrdersController {
-  constructor(private readonly ordersService: OrdersService) {}
+@Controller('members')
+export class MembersController {
+  constructor(private readonly membersService: MembersService) {}
 
+  // Crear
   @Post()
-  create(@Body() dto: CreateOrderDto) {
-    return this.ordersService.createOrder(dto);
+  create(@Body() dto: any) {
+    return this.membersService.createMember(dto);
   }
 
-  @Get('status/:customer')
-  status(@Param('customer') customer: string) {
-    return this.ordersService.getNotificationsStatus(customer);
+  // Leer todos
+  @Get()
+  findAll() {
+    return this.membersService.findAll();
   }
 
-  @Get(':id')
-  async findOne(@Param('id') id: string) {
-    const order = await this.ordersService.findOrder(id);
-    if (!order) {
-      throw new NotFoundException(`Orden ${id} no encontrada`);
-    }
-    return order;
+  // Actualizar un socio específico por su ID
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() dto: any) {
+    // El símbolo '+' convierte el id de string a número
+    return this.membersService.update(+id, dto);
+  }
+
+  // Eliminar un socio específico por su ID
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.membersService.remove(+id);
   }
 }

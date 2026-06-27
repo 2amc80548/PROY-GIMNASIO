@@ -9,7 +9,8 @@ RUN npm ci
 COPY apps ./apps
 COPY libs ./libs
 
-RUN npx nest build notifications
+
+RUN npx nest build billing
 
 # ---- runtime ----
 FROM node:20-alpine AS runtime
@@ -21,4 +22,5 @@ RUN npm ci --omit=dev && npm cache clean --force
 
 COPY --from=builder /app/dist ./dist
 
-CMD ["node", "dist/apps/notifications/apps/notifications/src/main.js"]
+
+CMD ["node", "dist/apps/billing/apps/billing/src/main.js"]

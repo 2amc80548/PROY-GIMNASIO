@@ -1,25 +1,19 @@
-import { Controller } from '@nestjs/common';
-import { EventPattern, MessagePattern, Payload } from '@nestjs/microservices';
-import {
-  ORDER_CREATED_EVENT,
-  NOTIFICATIONS_STATUS_PATTERN,
-  OrderCreatedEvent,
-  NotificationsStatusRequest,
-  NotificationsStatusResponse,
-} from '@app/contracts';
-import { NotificationsService } from './billing.service';
+import { Controller, Logger } from '@nestjs/common';
+import { EventPattern, Payload } from '@nestjs/microservices';
+import { BillingService } from './billing.service';
 
 @Controller()
-export class NotificationsController {
-  constructor(private readonly notificationsService: NotificationsService) {}
+export class BillingController {
+  private readonly logger = new Logger(BillingController.name);
 
-  @EventPattern(ORDER_CREATED_EVENT)
-  onOrderCreated(@Payload() event: OrderCreatedEvent): void {
-    this.notificationsService.handleOrderCreated(event);
-  }
+  constructor(private readonly billingService: BillingService) {}
 
-  @MessagePattern(NOTIFICATIONS_STATUS_PATTERN)
-  status(@Payload() payload: NotificationsStatusRequest): NotificationsStatusResponse {
-    return this.notificationsService.getStatus(payload.customer);
+  // Escucha exactamente el evento de members
+  @EventPattern('member.registered')
+  async handleMemberRegistered(@Payload() socio: any) {
+    this.logger.log(`¡Alerta! Nuevo socio detectado desde NATS: ${socio.nombre}`);
+    
+    // Le pasamos los datos del socio para que procese el cobro
+    await this.billingService.procesarPago(socio);
   }
 }

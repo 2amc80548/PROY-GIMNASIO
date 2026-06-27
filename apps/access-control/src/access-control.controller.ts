@@ -1,25 +1,20 @@
 import { Controller } from '@nestjs/common';
-import { EventPattern, MessagePattern, Payload } from '@nestjs/microservices';
-import {
-  ORDER_CREATED_EVENT,
-  NOTIFICATIONS_STATUS_PATTERN,
-  OrderCreatedEvent,
-  NotificationsStatusRequest,
-  NotificationsStatusResponse,
-} from '@app/contracts';
-import { NotificationsService } from './access-control.service';
+import { EventPattern, Payload } from '@nestjs/microservices';
+import { AccessControlService } from './access-control.service';
 
 @Controller()
-export class NotificationsController {
-  constructor(private readonly notificationsService: NotificationsService) {}
+export class AccessControlController {
+  constructor(private readonly accessControlService: AccessControlService) {}
 
-  @EventPattern(ORDER_CREATED_EVENT)
-  onOrderCreated(@Payload() event: OrderCreatedEvent): void {
-    this.notificationsService.handleOrderCreated(event);
+  // Escucha si el pago fue un éxito
+  @EventPattern('payment.charged')
+  handlePagoExitoso(@Payload() socio: any) {
+    this.accessControlService.concederAcceso(socio);
   }
 
-  @MessagePattern(NOTIFICATIONS_STATUS_PATTERN)
-  status(@Payload() payload: NotificationsStatusRequest): NotificationsStatusResponse {
-    return this.notificationsService.getStatus(payload.customer);
+  // Escucha si el pago falló
+  @EventPattern('payment.failed')
+  handlePagoRechazado(@Payload() socio: any) {
+    this.accessControlService.denegarAcceso(socio);
   }
 }
