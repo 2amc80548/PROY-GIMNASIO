@@ -21,4 +21,4 @@ import { RedisModule } from './redis/redis.module';
   controllers: [OrdersController],
   providers: [OrdersService],
 })
-export class OrdersModule {}
+export class MembersModule {}

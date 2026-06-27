@@ -6,4 +6,4 @@ import { NotificationsService } from './billing.service';
   controllers: [NotificationsController],
   providers: [NotificationsService],
 })
-export class NotificationsModule {}
+export class BillingModule {}

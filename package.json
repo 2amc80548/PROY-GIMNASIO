@@ -1,7 +1,7 @@
 {
-  "name": "test_nest",
+  "name": "proy-gimnasio",
   "version": "0.0.1",
-  "description": "Ejemplo IaC: 2 microservicios NestJS comunicados por NATS",
+  "description": "sistema de gestión de gimnasio",
   "author": "",
   "private": true,
   "license": "UNLICENSED",
