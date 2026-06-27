@@ -1,12 +1,14 @@
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { NATS_SERVICE, DEFAULT_NATS_URL } from '@app/contracts';
-import { OrdersController } from './members.controller';
-import { OrdersService } from './members.service';
-import { RedisModule } from './redis/redis.module';
+import { MembersController } from './members.controller';
+import { MembersService } from './members.service';
+import { Member } from './member.entity';
 
 @Module({
   imports: [
+    // 1. Conexión a NATS (De la plantilla oficial)
     ClientsModule.register([
       {
         name: NATS_SERVICE,
@@ -16,9 +18,20 @@ import { RedisModule } from './redis/redis.module';
         },
       },
     ]),
-    RedisModule,
+    // 2. Conexión a MySQL local
+    TypeOrmModule.forRoot({
+      type: 'mysql',
+      host: 'localhost',
+      port: 3306,
+      username: 'root',
+      password: 'admin',
+      database: 'gimnasio_db',
+      entities: [Member],
+      synchronize: true, // Crea la tabla automáticamente
+    }),
+    TypeOrmModule.forFeature([Member]),
   ],
-  controllers: [OrdersController],
-  providers: [OrdersService],
+  controllers: [MembersController],
+  providers: [MembersService],
 })
 export class MembersModule {}

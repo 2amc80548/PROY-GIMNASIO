@@ -9,7 +9,8 @@ RUN npm ci
 COPY apps ./apps
 COPY libs ./libs
 
-RUN npx nest build notifications
+# Compilamos específicamente access-control
+RUN npx nest build access-control
 
 # ---- runtime ----
 FROM node:20-alpine AS runtime
@@ -21,4 +22,5 @@ RUN npm ci --omit=dev && npm cache clean --force
 
 COPY --from=builder /app/dist ./dist
 
-CMD ["node", "dist/apps/notifications/apps/notifications/src/main.js"]
+
+CMD ["node", "dist/apps/access-control/apps/access-control/src/main.js"]

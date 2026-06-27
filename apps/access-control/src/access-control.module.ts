@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { NotificationsController } from './access-control.controller';
-import { NotificationsService } from './access-control.service';
+import { AccessControlController } from './access-control.controller';
+import { AccessControlService } from './access-control.service';
 
 @Module({
-  controllers: [NotificationsController],
-  providers: [NotificationsService],
+  controllers: [AccessControlController],
+  providers: [AccessControlService],
 })
-export class NotificationsModule {}
+export class AccessControlModule {}
