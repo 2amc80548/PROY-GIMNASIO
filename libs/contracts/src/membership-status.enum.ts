@@ -1,0 +1,5 @@
+export enum MembershipStatus {
+  PENDING_PAYMENT = 'PENDING_PAYMENT',
+  ACTIVE = 'ACTIVE',
+  BLOCKED = 'BLOCKED',
+}

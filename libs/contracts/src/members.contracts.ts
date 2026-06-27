@@ -1,8 +1,11 @@
-export const ORDER_CREATED_EVENT = 'order.created';
+// Evento publicado por `members` cuando un socio se inscribe a un plan.
+// `billing` lo escucha para generar el cobro de la primera mensualidad.
+export const MEMBER_REGISTERED_EVENT = 'member.registered';
 
-export interface OrderCreatedEvent {
-  orderId: string;
-  customer: string;
-  total: number;
-  createdAt: string;
+export interface MemberRegisteredEvent {
+  memberId: string;
+  name: string;
+  planId: string;
+  amount: number;
+  registeredAt: string;
 }

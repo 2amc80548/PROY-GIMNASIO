@@ -26,6 +26,16 @@
       "compilerOptions": {
         "tsConfigPath": "apps/billing/tsconfig.app.json"
       }
+      
+    },
+    "access-control": {
+      "type": "application",
+      "root": "apps/access-control",
+      "entryFile": "main",
+      "sourceRoot": "apps/access-control/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/access-control/tsconfig.app.json"
+      }
     },
     "contracts": {
       "type": "library",

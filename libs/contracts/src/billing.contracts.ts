@@ -1,11 +1,17 @@
-export const NOTIFICATIONS_STATUS_PATTERN = 'notifications.status';
+// Eventos publicados por `billing` luego de procesar el cobro mensual.
+// `access-control` los escucha para decidir si habilita o bloquea el acceso.
+export const PAYMENT_CHARGED_EVENT = 'payment.charged';
+export const PAYMENT_FAILED_EVENT = 'payment.failed';
 
-export interface NotificationsStatusRequest {
-  customer: string;
+export interface PaymentChargedEvent {
+  memberId: string;
+  paymentId: string;
+  amount: number;
+  chargedAt: string;
 }
 
-export interface NotificationsStatusResponse {
-  customer: string;
-  sent: number;
-  lastSentAt: string | null;
+export interface PaymentFailedEvent {
+  memberId: string;
+  reason: string;
+  failedAt: string;
 }
