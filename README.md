@@ -57,3 +57,27 @@ npm run start:access-control
 ✅ Verificación
 
 Sabrás que todo está bien cuando las 3 terminales muestren mensajes en VERDE sin errores.
+--------------------------------------------------------------------------
+
+Para probar que todo funciona, usa Postman o Thunder Client 
+
+Haz una petición POST a http://localhost:3000/members.
+
+En el Body (Formato JSON), envía un nuevo mienbro. (Nota: El email debe ser único cada vez):
+
+JSON
+{
+  "nombre": "Juan Perez",
+  "email": "juan.perez.1@gmail.com",
+  "plan": "Mensual Premium"
+}
+Presiona Send.
+
+¿Qué deberías ver en las terminales?
+Mira tus 3 terminales y verás el flujo en tiempo real:
+
+members guardará al socio en MySQL y gritará member.registered.
+
+billing escuchará, cobrará y gritará payment.charged o payment.failed.
+
+access-control escuchará el cobro y mostrará 🟢 TORNIQUETE DESBLOQUEADO o 🔴 TORNIQUETE BLOQUEADO.
