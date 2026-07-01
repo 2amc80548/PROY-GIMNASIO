@@ -9,11 +9,8 @@ export class BillingController {
   constructor(private readonly billingService: BillingService) {}
 
   // Escucha exactamente el evento de members
-  @EventPattern('member.registered')
-  async handleMemberRegistered(@Payload() socio: any) {
-    this.logger.log(`¡Alerta! Nuevo socio detectado desde NATS: ${socio.nombre}`);
-    
-    // Le pasamos los datos del socio para que procese el cobro
-    await this.billingService.procesarPago(socio);
+@EventPattern('member.registered')
+  handleMemberRegistered(@Payload() data: { id: number; nombre: string; plan: string }) {
+    this.billingService.procesarPago(data);
   }
 }

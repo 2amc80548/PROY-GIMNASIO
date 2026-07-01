@@ -1,21 +1,25 @@
-resource "aws_ecr_repository" "orders" {
-  name                 = "${var.project_name}/orders"
+# 1. Repositorio para Members
+resource "aws_ecr_repository" "members" {
+  name                 = "${var.project_name}/members"
   image_tag_mutability = "MUTABLE"
   force_delete         = true
-
-  image_scanning_configuration {
-    scan_on_push = true
-  }
+  image_scanning_configuration { scan_on_push = true }
 }
 
-resource "aws_ecr_repository" "notifications" {
-  name                 = "${var.project_name}/notifications"
+# 2. Repositorio para Billing
+resource "aws_ecr_repository" "billing" {
+  name                 = "${var.project_name}/billing"
   image_tag_mutability = "MUTABLE"
   force_delete         = true
+  image_scanning_configuration { scan_on_push = true }
+}
 
-  image_scanning_configuration {
-    scan_on_push = true
-  }
+# 3. Repositorio para Access Control
+resource "aws_ecr_repository" "access_control" {
+  name                 = "${var.project_name}/access-control"
+  image_tag_mutability = "MUTABLE"
+  force_delete         = true
+  image_scanning_configuration { scan_on_push = true }
 }
 
 locals {
@@ -33,12 +37,17 @@ locals {
   })
 }
 
-resource "aws_ecr_lifecycle_policy" "orders" {
-  repository = aws_ecr_repository.orders.name
+resource "aws_ecr_lifecycle_policy" "members" {
+  repository = aws_ecr_repository.members.name
   policy     = local.ecr_lifecycle_policy
 }
 
-resource "aws_ecr_lifecycle_policy" "notifications" {
-  repository = aws_ecr_repository.notifications.name
+resource "aws_ecr_lifecycle_policy" "billing" {
+  repository = aws_ecr_repository.billing.name
+  policy     = local.ecr_lifecycle_policy
+}
+
+resource "aws_ecr_lifecycle_policy" "access_control" {
+  repository = aws_ecr_repository.access_control.name
   policy     = local.ecr_lifecycle_policy
 }

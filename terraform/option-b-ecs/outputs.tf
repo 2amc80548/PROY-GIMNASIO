@@ -1,16 +1,21 @@
 output "alb_dns_name" {
-  description = "URL pública del ALB."
+  description = "URL pública del ALB par ael front."
   value       = aws_lb.main.dns_name
 }
 
-output "ecr_orders_repository_url" {
-  description = "URL del repo ECR para orders."
-  value       = aws_ecr_repository.orders.repository_url
+output "ecr_members_repository_url" {
+  description = "URL del repo ECR para members."
+  value       = aws_ecr_repository.members.repository_url
 }
 
-output "ecr_notifications_repository_url" {
-  description = "URL del repo ECR para notifications."
-  value       = aws_ecr_repository.notifications.repository_url
+output "ecr_billing_repository_url" {
+  description = "URL del repo ECR para billing."
+  value       = aws_ecr_repository.billing.repository_url
+}
+
+output "ecr_access_control_repository_url" {
+  description = "URL del repo ECR para access-control."
+  value       = aws_ecr_repository.access_control.repository_url
 }
 
 output "ecr_login_command" {
@@ -28,7 +33,7 @@ output "service_discovery_namespace" {
   value       = aws_service_discovery_private_dns_namespace.main.name
 }
 
-output "redis_endpoint" {
-  description = "Host:puerto del nodo ElastiCache Redis."
-  value       = "${aws_elasticache_cluster.redis.cache_nodes[0].address}:${aws_elasticache_cluster.redis.cache_nodes[0].port}"
+output "mysql_endpoint" {
+  description = "Host y puerto de la base de datos MySQL (RDS)."
+  value       = aws_db_instance.mysql.endpoint
 }

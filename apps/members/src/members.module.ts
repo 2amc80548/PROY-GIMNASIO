@@ -5,6 +5,7 @@ import { NATS_SERVICE, DEFAULT_NATS_URL } from '@app/contracts';
 import { MembersController } from './members.controller';
 import { MembersService } from './members.service';
 import { Member } from './member.entity';
+import { PaymentEventsController } from './payment-events.controller';
 
 @Module({
   imports: [
@@ -21,17 +22,17 @@ import { Member } from './member.entity';
     // 2. Conexión a MySQL local
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'localhost',
+      host: process.env.DB_HOST || 'localhost',
       port: 3306,
-      username: 'root',
-      password: 'admin',
-      database: 'gimnasio_db',
+      username: process.env.DB_USERNAME || 'root',
+      password: process.env.DB_PASSWORD || 'admin', // contraseña local
+      database: process.env.DB_NAME || 'gimnasio_db',
       entities: [Member],
-      synchronize: true, // Crea la tabla automáticamente
+      synchronize: true,
     }),
     TypeOrmModule.forFeature([Member]),
   ],
-  controllers: [MembersController],
+  controllers: [MembersController, PaymentEventsController],
   providers: [MembersService],
 })
 export class MembersModule {}

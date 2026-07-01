@@ -4,7 +4,6 @@ variable "aws_region" {
   default     = "us-east-1"
 }
 
-# Definir en terraform.tfvars (no commitear) o usar `aws configure` / env vars.
 variable "access_key" {
   description = "AWS access key."
   type        = string
@@ -22,7 +21,7 @@ variable "secret_key" {
 variable "project_name" {
   description = "Prefijo para nombrar todos los recursos."
   type        = string
-  default     = "gestion_gimnasio"
+  default     = "gestion-gimnasio"
 }
 
 variable "vpc_cidr" {
@@ -32,7 +31,7 @@ variable "vpc_cidr" {
 }
 
 variable "public_subnet_cidrs" {
-  description = "CIDRs de las subnets públicas (una por AZ)."
+  description = "CIDRs de las subnets públicas."
   type        = list(string)
   default     = ["10.0.1.0/24", "10.0.2.0/24"]
 }
@@ -43,20 +42,28 @@ variable "azs" {
   default     = ["us-east-1a", "us-east-1b"]
 }
 
-variable "orders_desired_count" {
-  description = "Número de tareas Fargate para orders."
+# --- VARIABLES DE LOS MICROSERVICIOS DEL GIMNASIO ---
+
+variable "members_desired_count" {
+  description = "Número de tareas para members."
   type        = number
   default     = 1
 }
 
-variable "notifications_desired_count" {
-  description = "Número de tareas Fargate para notifications."
+variable "billing_desired_count" {
+  description = "Número de tareas para billing."
+  type        = number
+  default     = 1
+}
+
+variable "access_control_desired_count" {
+  description = "Número de tareas para access-control."
   type        = number
   default     = 1
 }
 
 variable "task_cpu" {
-  description = "CPU por tarea Fargate (256 = 0.25 vCPU)."
+  description = "CPU por tarea Fargate."
   type        = string
   default     = "256"
 }
@@ -73,8 +80,28 @@ variable "image_tag" {
   default     = "latest"
 }
 
-variable "redis_node_type" {
-  description = "Tipo de nodo ElastiCache para Redis."
+# --- VARIABLES DE MYSQL (RDS) ---
+
+variable "db_instance_class" {
+  description = "Tipo de nodo RDS para MySQL."
   type        = string
-  default     = "cache.t3.micro"
+  default     = "db.t3.micro"
+}
+
+variable "db_name" {
+  description = "Nombre de la base de datos MySQL."
+  type        = string
+  default     = "gimnasio_db"
+}
+
+variable "db_username" {
+  description = "Usuario maestro de MySQL."
+  type        = string
+  default     = "admin"
+}
+
+variable "db_password" {
+  description = "Contraseña maestra de MySQL (se pasa por tfvars)."
+  type        = string
+  sensitive   = true
 }

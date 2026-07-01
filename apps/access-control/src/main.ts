@@ -16,4 +16,4 @@ async function bootstrap() {
   Logger.log('Access Control vigilando el torniquete vía NATS', 'Bootstrap');
 }
 
-bootstrap();
+bootstrap().catch(err => console.error(err));

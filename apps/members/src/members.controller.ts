@@ -6,8 +6,8 @@ export class MembersController {
   constructor(private readonly membersService: MembersService) {}
 
   // Crear
-  @Post()
-  create(@Body() dto: any) {
+@Post()
+  create(@Body() dto: { nombre: string; email: string; plan: string }) {
     return this.membersService.createMember(dto);
   }
 
@@ -19,8 +19,7 @@ export class MembersController {
 
   // Actualizar un socio específico por su ID
   @Patch(':id')
-  update(@Param('id') id: string, @Body() dto: any) {
-    // El símbolo '+' convierte el id de string a número
+  update(@Param('id') id: string, @Body() dto: { nombre?: string; email?: string; plan?: string }) {
     return this.membersService.update(+id, dto);
   }
 

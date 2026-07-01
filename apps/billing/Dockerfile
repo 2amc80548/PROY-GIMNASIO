@@ -23,4 +23,4 @@ RUN npm ci --omit=dev && npm cache clean --force
 COPY --from=builder /app/dist ./dist
 
 
-CMD ["node", "dist/apps/billing/apps/billing/src/main.js"]
+CMD ["sh", "-c", "FILE=$(find dist -name main.js | grep billing | head -n 1) && node $FILE"]
