@@ -10,20 +10,18 @@ resource "aws_security_group" "alb" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
   egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
   tags = { Name = "${var.project_name}-alb-sg" }
 }
 
-resource "aws_security_group" "orders" {
-  name        = "${var.project_name}-orders-sg"
-  description = "Permite trafico solo desde el ALB hacia orders:3000"
+resource "aws_security_group" "members" {
+  name        = "${var.project_name}-members-sg"
+  description = "Permite trafico solo desde el ALB hacia members:3000"
   vpc_id      = aws_vpc.main.id
 
   ingress {
@@ -33,20 +31,18 @@ resource "aws_security_group" "orders" {
     protocol        = "tcp"
     security_groups = [aws_security_group.alb.id]
   }
-
   egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
-  tags = { Name = "${var.project_name}-orders-sg" }
+  tags = { Name = "${var.project_name}-members-sg" }
 }
 
-resource "aws_security_group" "notifications" {
-  name        = "${var.project_name}-notifications-sg"
-  description = "notifications no acepta entrante (microservicio NATS puro)"
+resource "aws_security_group" "billing" {
+  name        = "${var.project_name}-billing-sg"
+  description = "billing no acepta HTTP (microservicio NATS puro)"
   vpc_id      = aws_vpc.main.id
 
   egress {
@@ -55,13 +51,27 @@ resource "aws_security_group" "notifications" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
-  tags = { Name = "${var.project_name}-notifications-sg" }
+  tags = { Name = "${var.project_name}-billing-sg" }
 }
 
+resource "aws_security_group" "access_control" {
+  name        = "${var.project_name}-access-control-sg"
+  description = "access-control no acepta HTTP (microservicio NATS puro)"
+  vpc_id      = aws_vpc.main.id
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  tags = { Name = "${var.project_name}-access-control-sg" }
+}
+
+# --- REGLAS AISLADAS PARA NATS ---
 resource "aws_security_group" "nats" {
   name        = "${var.project_name}-nats-sg"
-  description = "Broker NATS: ingreso solo desde orders y notifications"
+  description = "Broker NATS: ingreso desde los 3 microservicios"
   vpc_id      = aws_vpc.main.id
 
   egress {
@@ -70,42 +80,46 @@ resource "aws_security_group" "nats" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
   tags = { Name = "${var.project_name}-nats-sg" }
 }
 
-# Reglas separadas para evitar dependencias circulares entre SGs.
-resource "aws_vpc_security_group_ingress_rule" "nats_from_orders" {
+resource "aws_vpc_security_group_ingress_rule" "nats_from_members" {
   security_group_id            = aws_security_group.nats.id
-  referenced_security_group_id = aws_security_group.orders.id
+  referenced_security_group_id = aws_security_group.members.id
   ip_protocol                  = "tcp"
   from_port                    = 4222
   to_port                      = 4222
-  description                  = "NATS desde orders"
 }
 
-resource "aws_vpc_security_group_ingress_rule" "nats_from_notifications" {
+resource "aws_vpc_security_group_ingress_rule" "nats_from_billing" {
   security_group_id            = aws_security_group.nats.id
-  referenced_security_group_id = aws_security_group.notifications.id
+  referenced_security_group_id = aws_security_group.billing.id
   ip_protocol                  = "tcp"
   from_port                    = 4222
   to_port                      = 4222
-  description                  = "NATS desde notifications"
 }
 
-resource "aws_security_group" "redis" {
-  name        = "${var.project_name}-redis-sg"
-  description = "ElastiCache Redis: ingreso solo desde orders"
+resource "aws_vpc_security_group_ingress_rule" "nats_from_access_control" {
+  security_group_id            = aws_security_group.nats.id
+  referenced_security_group_id = aws_security_group.access_control.id
+  ip_protocol                  = "tcp"
+  from_port                    = 4222
+  to_port                      = 4222
+}
+
+# --- REGLAS AISLADAS PARA MYSQL (RDS) ---
+resource "aws_security_group" "mysql" {
+  name        = "${var.project_name}-mysql-sg"
+  description = "RDS MySQL: ingreso solo desde members"
   vpc_id      = aws_vpc.main.id
 
-  tags = { Name = "${var.project_name}-redis-sg" }
+  tags = { Name = "${var.project_name}-mysql-sg" }
 }
 
-resource "aws_vpc_security_group_ingress_rule" "redis_from_orders" {
-  security_group_id            = aws_security_group.redis.id
-  referenced_security_group_id = aws_security_group.orders.id
+resource "aws_vpc_security_group_ingress_rule" "mysql_from_members" {
+  security_group_id            = aws_security_group.mysql.id
+  referenced_security_group_id = aws_security_group.members.id
   ip_protocol                  = "tcp"
-  from_port                    = 6379
-  to_port                      = 6379
-  description                  = "Redis desde orders"
+  from_port                    = 3306
+  to_port                      = 3306
 }

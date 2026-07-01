@@ -4,11 +4,12 @@ import { Injectable, Logger } from '@nestjs/common';
 export class AccessControlService {
   private readonly logger = new Logger(AccessControlService.name);
 
-  concederAcceso(socio: any) {
+
+  concederAcceso(socio: { nombre: string }) {
     this.logger.log(`🟢 TORNIQUETE DESBLOQUEADO: Bienvenido al gimnasio, ${socio.nombre}.`);
   }
 
-  denegarAcceso(socio: any) {
+  denegarAcceso(socio: { nombre: string }) {
     this.logger.warn(`🔴 TORNIQUETE BLOQUEADO: Acceso denegado para ${socio.nombre}. Pago pendiente.`);
   }
 }

@@ -16,4 +16,4 @@ async function bootstrap() {
   Logger.log('billing escuchando eventos NATS', 'Bootstrap');
 }
 
-bootstrap();
+bootstrap().catch(err => console.error(err));

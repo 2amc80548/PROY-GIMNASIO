@@ -24,4 +24,5 @@ COPY --from=builder /app/dist ./dist
 
 EXPOSE 3000
 
-CMD ["node", "dist/apps/members/apps/members/src/main.js"]
+CMD ["sh", "-c", "FILE=$(find dist -name main.js | grep members | head -n 1) && node $FILE"]
+

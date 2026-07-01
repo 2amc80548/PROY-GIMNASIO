@@ -23,4 +23,4 @@ RUN npm ci --omit=dev && npm cache clean --force
 COPY --from=builder /app/dist ./dist
 
 
-CMD ["node", "dist/apps/access-control/apps/access-control/src/main.js"]
+CMD ["sh", "-c", "FILE=$(find dist -name main.js | grep access-control | head -n 1) && node $FILE"]

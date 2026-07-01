@@ -7,14 +7,13 @@ export class AccessControlController {
   constructor(private readonly accessControlService: AccessControlService) {}
 
   // Escucha si el pago fue un éxito
-  @EventPattern('payment.charged')
-  handlePagoExitoso(@Payload() socio: any) {
-    this.accessControlService.concederAcceso(socio);
+@EventPattern('payment.charged')
+  handlePaymentCharged(@Payload() data: { nombre: string }) {
+    this.accessControlService.concederAcceso(data);
   }
 
-  // Escucha si el pago falló
-  @EventPattern('payment.failed')
-  handlePagoRechazado(@Payload() socio: any) {
-    this.accessControlService.denegarAcceso(socio);
+@EventPattern('payment.failed')
+  handlePaymentFailed(@Payload() data: { nombre: string }) {
+    this.accessControlService.denegarAcceso(data);
   }
 }
