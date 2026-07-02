@@ -64,13 +64,15 @@ resource "aws_ecs_task_definition" "members" {
     portMappings = [
       { containerPort = 3000, protocol = "tcp" }
     ]
-    environment = [
+   environment = [
       { name = "NATS_URL", value = local.nats_dns_url },
       { name = "DB_HOST", value = aws_db_instance.mysql.address },
       { name = "DB_USERNAME", value = var.db_username },
-      { name = "DB_PASSWORD", value = var.db_password },
       { name = "DB_NAME", value = var.db_name },
       { name = "MEMBERS_HTTP_PORT", value = "3000" }
+    ]
+    secrets = [
+      { name = "DB_PASSWORD", valueFrom = aws_secretsmanager_secret.db_password.arn }
     ]
     logConfiguration = {
       logDriver = "awslogs"
@@ -153,7 +155,13 @@ resource "aws_ecs_service" "nats" {
   service_registries {
     registry_arn = aws_service_discovery_service.nats.arn
   }
+
+  lifecycle {
+    ignore_changes = [desired_count]
+  }
+
 }
+
 
 resource "aws_ecs_service" "members" {
   name            = "members"

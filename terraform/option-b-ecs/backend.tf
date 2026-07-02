@@ -5,5 +5,5 @@
 # Para correr local sin backend remoto, comentá este bloque o usá
 # `terraform init -backend=false`.
 terraform {
-  backend "s3" {}
+ backend "s3" {}
 }
