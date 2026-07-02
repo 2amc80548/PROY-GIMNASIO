@@ -69,6 +69,8 @@ jobs:
       - name: Terraform plan
         working-directory: ${{ env.TF_WORKING_DIR }}
         id: plan
+        env:                                                
+          TF_VAR_db_password: ${{ secrets.DB_PASSWORD }}    
         run: |
           set +e
           terraform plan -input=false -no-color -lock-timeout=5m \
