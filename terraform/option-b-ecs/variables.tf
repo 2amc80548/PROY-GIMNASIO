@@ -105,3 +105,27 @@ variable "db_password" {
   type        = string
   sensitive   = true
 }
+
+variable "members_min_count" {
+  description = "Mínimo de tareas de members (piso del autoscaling)."
+  type        = number
+  default     = 1
+}
+
+variable "members_max_count" {
+  description = "Máximo de tareas de members (techo del autoscaling)."
+  type        = number
+  default     = 4
+}
+
+variable "members_cpu_target" {
+  description = "% de CPU promedio objetivo; ECS agrega/quita tareas para mantenerlo."
+  type        = number
+  default     = 60
+}
+
+variable "db_multi_az" {
+  description = "Si es true, RDS mantiene una réplica standby sincrónica en otra AZ con failover automático (duplica el costo de la instancia)."
+  type        = bool
+  default     = false
+}

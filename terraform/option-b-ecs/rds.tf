@@ -10,6 +10,7 @@ resource "aws_db_instance" "mysql" {
   instance_class         = var.db_instance_class
   allocated_storage      = 20
   storage_type           = "gp2"
+  multi_az               = var.db_multi_az
   
   db_name                = var.db_name
   username               = var.db_username
